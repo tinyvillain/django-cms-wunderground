@@ -51,8 +51,9 @@ class CityWeatherPlugin(CMSPluginBase):
 	render_template = "cmsplugin_wunderground/city_weather.html"
 
 	def render(self, context, instance, placeholder):
-		cache_key = 'wunderground_result_city_%s' % instance.city
-		
+		cache_key_conditions = 'wunderground_result_conditions_city_%s' % instance.city
+		cache_key_forecast = 'wunderground_result_forecast_city_%s' % instance.city
+
 		# check for api key
 		try:
 			wunderground_key = getattr(settings, 'WUNDERGROUND_KEY')
@@ -60,16 +61,28 @@ class CityWeatherPlugin(CMSPluginBase):
 			raise Exception('WUNDERGROUND_KEY not set in settings')
 		
 		weather_url = 'http://api.wunderground.com/api/%s/conditions/q/%s.json' % (wunderground_key, instance.city)
-		weather_info = cache.get(cache_key)
+
+		forecast_url = 'http://api.wunderground.com/api/%s/forecast/q/%s.json' % (wunderground_key, instance.city)
+
+
+		weather_info = cache.get(cache_key_conditions)
 		if not weather_info:
 			wunderground_response = urllib2.urlopen(weather_url)
 			weather_info_json = wunderground_response.read()
 			weather_info = json.loads(weather_info_json)
-			cache.set(cache_key, weather_info, getattr(settings, 'WUNDERGROUND_CACHE_DURATION', 60*60))
+			cache.set(cache_key_conditions, weather_info, getattr(settings, 'WUNDERGROUND_CACHE_DURATION', 60*60))
+
+		forecast_info = cache.get(cache_key_forecast)
+		if not forecast_info:
+			wunderground_response = urllib2.urlopen(forecast_url)
+			forecast_info_json = wunderground_response.read()
+			forecast_info = json.loads(forecast_info_json)
+			cache.set(cache_key_forecast, forecast_info, getattr(settings, 'WUNDERGROUND_CACHE_DURATION', 60*60))
 		
 		context.update({
 			'instance': instance,
 			'weather_info': weather_info,
+			'forecast_info': forecast_info,
 		})
 		return context
 

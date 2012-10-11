@@ -1,5 +1,11 @@
 {% comment %}
-	example rendering for json array
+# example rendering for json array
+{{ weather_info.current_observation.icon }}<br/>
+{{ weather_info.current_observation.temp_c }}<br/>
+{{ weather_info.current_observation.feelslike_c }}<br/>
+{{ forecast_info.forecast.simpleforecast.forecastday.0.high.celsius }}<br/>
+{{ forecast_info.forecast.simpleforecast.forecastday.0.low.celsius }}<br/>
+{{ forecast_info.forecast.simpleforecast.forecastday.0.snow_day.cm }}<br/>
+{{ forecast_info.forecast.simpleforecast.forecastday.0.icon }}<br/>
+# etc,
 {% endcomment %}
-
-{{ weather_info.current_observation.icon }}
