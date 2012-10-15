@@ -5,7 +5,7 @@ import datetime
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 from django.core.urlresolvers import reverse
-from django.core.cache import cache
+from django.core.cache import get_cache
 
 from cms.plugin_pool import plugin_pool
 from cms.plugin_base import CMSPluginBase
@@ -30,6 +30,14 @@ class CurrentWeatherPlugin(CMSPluginBase):
 			raise Exception('WUNDERGROUND_KEY not set in settings')
 
 		weather_url = 'http://api.wunderground.com/api/%s/geolookup/conditions/q/autoip.json?geo_ip=%s' % (wunderground_key, user_ip_address)
+
+		# force not to clear when memcached clears
+		# and use percistent disk cache
+		try:
+			cache = get_cache('weather')
+		except:
+			pass
+
 		weather_info = cache.get(cache_key)
 		if not weather_info:
 			wunderground_response = urllib2.urlopen(weather_url)
@@ -64,7 +72,13 @@ class CityWeatherPlugin(CMSPluginBase):
 		weather_url = 'http://api.wunderground.com/api/%s/conditions/q/%s.json' % (wunderground_key, instance.city)
 
 		forecast_url = 'http://api.wunderground.com/api/%s/forecast/q/%s.json' % (wunderground_key, instance.city)
-
+		
+		# force not to clear when memcached clears
+		# and use percistent disk cache
+		try:
+			cache = get_cache('weather')
+		except:
+			pass
 
 		weather_info = cache.get(cache_key_conditions)
 		if not weather_info:
