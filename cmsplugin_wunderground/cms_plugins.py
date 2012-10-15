@@ -1,5 +1,6 @@
 import urllib2
 import json
+import datetime
 
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
@@ -83,6 +84,7 @@ class CityWeatherPlugin(CMSPluginBase):
 			'instance': instance,
 			'weather_info': weather_info,
 			'forecast_info': forecast_info,
+			'today': datetime.datetime.today()
 		})
 		return context
 
