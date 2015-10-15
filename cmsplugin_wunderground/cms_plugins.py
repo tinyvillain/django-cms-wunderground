@@ -40,7 +40,7 @@ class CurrentWeatherPlugin(CMSPluginBase):
 
 		weather_info = cache.get(cache_key)
 		if not weather_info:
-			wunderground_response = urllib2.urlopen(weather_url)
+			wunderground_response = urllib2.urlopen(weather_url, timeout=10)
 			weather_info_json = wunderground_response.read()
 			weather_info = json.loads(weather_info_json)
 			cache.set(cache_key, weather_info, getattr(settings, 'WUNDERGROUND_CACHE_DURATION', 60*60))
@@ -82,14 +82,14 @@ class CityWeatherPlugin(CMSPluginBase):
 
 		weather_info = cache.get(cache_key_conditions)
 		if not weather_info:
-			wunderground_response = urllib2.urlopen(weather_url)
+			wunderground_response = urllib2.urlopen(weather_url, timeout=10)
 			weather_info_json = wunderground_response.read()
 			weather_info = json.loads(weather_info_json)
 			cache.set(cache_key_conditions, weather_info, getattr(settings, 'WUNDERGROUND_CACHE_DURATION', 60*60))
 
 		forecast_info = cache.get(cache_key_forecast)
 		if not forecast_info:
-			wunderground_response = urllib2.urlopen(forecast_url)
+			wunderground_response = urllib2.urlopen(forecast_url, timeout=10)
 			forecast_info_json = wunderground_response.read()
 			forecast_info = json.loads(forecast_info_json)
 			cache.set(cache_key_forecast, forecast_info, getattr(settings, 'WUNDERGROUND_CACHE_DURATION', 60*60))
